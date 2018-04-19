@@ -38,11 +38,11 @@ function initGame() {
 	// replace cards
 	for (let i = 0; i < cards.length; i++) {
 		cards[i].addEventListener('click', cardClicked);
-		cards[i].classList.remove('open','show','match');
+		cards[i].classList.remove('open', 'show', 'match', 'flip', 'ruberBand');
 		deck.appendChild(cards[i]);
 	}
 
-	setInterval(updateTimer, 1000);
+	// setInterval(updateTimer, 1000);
 }
 
 function resetGame() {
@@ -81,7 +81,7 @@ function cardClicked() {
 	// remove the clicked event listener, re-adds later if not a match
 	this.removeEventListener('click', cardClicked);
 
-	this.classList.add('open','show');
+	this.classList.add('open', 'show', 'pulse');
 
 	const card = this.querySelector('.fa');
 	const cardName = card.className;
@@ -98,10 +98,12 @@ function compareCards() {
 	const card1 = compare[0].querySelector('.fa').className;
 	const card2 = compare[1].querySelector('.fa').className;
 
-	if (card1 === card2) {
+	if (card1 == card2) {
 		matchCards();
 	} else {
-		setTimeout(hideCards, 1000);
+		compare[0].classList.add('shake');
+		compare[1].classList.add('shake');
+		setTimeout(hideCards, 1750);
 	}
 
 	incrementMoves();
@@ -110,8 +112,8 @@ function compareCards() {
 function matchCards() {
 	removeOpenShow();
 
-	compare[0].classList.add('match');
-	compare[1].classList.add('match');
+	compare[0].classList.add('match', 'rubberBand');
+	compare[1].classList.add('match', 'rubberBand');
 
 	resetCompare();
 }
@@ -126,8 +128,8 @@ function hideCards() {
 }
 
 function removeOpenShow() {
-	compare[0].classList.remove('open','show');
-	compare[1].classList.remove('open','show');
+	compare[0].classList.remove('open', 'show', 'pulse');
+	compare[1].classList.remove('open', 'show', 'pulse');
 
 	clickActive = true;
 }
