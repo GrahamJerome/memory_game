@@ -13,6 +13,7 @@
 const deck = document.querySelector('.deck');
 const cards = Array.from(document.querySelectorAll('.card'));
 const compare = [];
+let matches = 0;
 let clickActive = true;
 
 const flipAnim = 'jello';
@@ -22,15 +23,20 @@ const noMatchAnim = 'shake';
 let moves = 0;
 const movesHolder = document.querySelector('.moves');
 const starsHolder = document.querySelector('.stars').querySelectorAll('.fa');
-
+let stars = 3;
 const restartButton = document.querySelector('.restart');
-restartButton.addEventListener('click', initGame);
 
 let gameTime = 0;
 let gameTimer;
 const timer = document.querySelector('.timer');
 
+const winModal = document.querySelector('.winModal');
+const replayButton = document.querySelector('.replay');
+
 initGame();
+restartButton.addEventListener('click', initGame);
+replayButton.addEventListener('click', initGame);
+
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -48,15 +54,25 @@ function shuffle(array) {
 }
 
 function initGame() {
+	// reset matches
+	matches = 0;
+
+	// reset the moves and stars
 	moves = 0;
 	movesHolder.innerText = 0;
 
+	stars = 3;
 	starsHolder.forEach(function(element){
 		element.classList.replace('fa-star-o', 'fa-star');
 	});
 
-	resetCompare();
+	// reset the timer
+	clearInterval(gameTimer);
+	gameTimer = null;
+	gameTime = 0;
+	timer.innerText = 0;
 
+	resetCompare();
 	shuffle(cards);
 
 	// remove all cards
@@ -71,10 +87,7 @@ function initGame() {
 		deck.appendChild(cards[i]);
 	}
 
-	clearInterval(gameTimer);
-	gameTimer = null;
-	gameTime = 0;
-	timer.innerText = 0;
+	winModal.classList.add('hidden');
 }
 
 function removeCardClasses(...classes) {
@@ -91,8 +104,8 @@ function addCardClasses(...classes) {
 
 function cardClicked() {
 	if (!clickActive) { return; }
+
 	if (!gameTimer) {
-		console.log('timer started');
 		gameTimer = setInterval(updateTimer, 1000);
 	}
 
@@ -115,9 +128,13 @@ function compareCards() {
 	card1 === card2 ? matchCards() : hideCards();
 
 	incrementMoves();
+
+	checkCompleted();
 }
 
 function matchCards() {
+	matches++;
+
 	addCardClasses('match', matchAnim);
 	removeCardClasses('open', 'show', flipAnim);
 
@@ -150,11 +167,14 @@ function incrementMoves() {
 }
 
 function adjustStars() {
-	if (moves == 10) {
+	if (moves == 20) {
+		stars--;
 		starsHolder[2].classList.replace('fa-star', 'fa-star-o');
-	} else if (moves == 17) {
+	} else if (moves == 30) {
+		stars--;
 		starsHolder[1].classList.replace('fa-star', 'fa-star-o');
-	} else if (moves == 23) {
+	} else if (moves == 40) {
+		stars--;
 		starsHolder[0].classList.replace('fa-star', 'fa-star-o');
 	}
 }
@@ -165,16 +185,21 @@ function updateTimer() {
 	const date = new Date(gameTime * 1000);
 	const formatedTime = date.getUTCMinutes() + ':' + date.getSeconds();
 
-	timer.innerText = formatedTime; // use moment.js later
+	timer.innerText = formatedTime;
 }
 
-/*
- * set up the event listener for a card. If a card is clicked:
- *  - display the card's symbol (put this functionality in another function that you call from this one)
- *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
- *  - if the list already has another card, check to see if the two cards match
- *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
- *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
- *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
- *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
- */
+function checkCompleted() {
+	if (matches === (cards.length / 2)) {
+		clearInterval(gameTimer);
+
+		const winMoves = winModal.querySelector('.win-moves');
+		const winStars = winModal.querySelector('.win-stars');
+
+		winMoves.innerText = moves;
+		winStars.innerText = stars;
+
+		setTimeout(function(){
+			winModal.classList.remove('hidden');
+		}, 1200);
+	}
+}
