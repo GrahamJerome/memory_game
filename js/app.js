@@ -27,6 +27,8 @@ const restartButton = document.querySelector('.restart');
 restartButton.addEventListener('click', initGame);
 
 let gameTime = 0;
+let gameTimer;
+const timer = document.querySelector('.timer');
 
 initGame();
 
@@ -69,7 +71,10 @@ function initGame() {
 		deck.appendChild(cards[i]);
 	}
 
-	// setInterval(updateTimer, 1000);
+	clearInterval(gameTimer);
+	gameTimer = null;
+	gameTime = 0;
+	timer.innerText = 0;
 }
 
 function removeCardClasses(...classes) {
@@ -86,6 +91,10 @@ function addCardClasses(...classes) {
 
 function cardClicked() {
 	if (!clickActive) { return; }
+	if (!gameTimer) {
+		console.log('timer started');
+		gameTimer = setInterval(updateTimer, 1000);
+	}
 
 	compare.push(this);
 
@@ -125,7 +134,7 @@ function hideCards() {
 		});
 
 		resetCompare();
-	}, 1750);
+	}, 1550);
 }
 
 function resetCompare() {
@@ -156,7 +165,7 @@ function updateTimer() {
 	const date = new Date(gameTime * 1000);
 	const formatedTime = date.getUTCMinutes() + ':' + date.getSeconds();
 
-	document.querySelector('.timer').innerText = formatedTime; // use moment.js later
+	timer.innerText = formatedTime; // use moment.js later
 }
 
 /*
