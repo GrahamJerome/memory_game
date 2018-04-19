@@ -91,12 +91,14 @@ function initGame() {
 }
 
 function removeCardClasses(...classes) {
+	// cycle through the array and remove
 	compare.forEach(function(card) {
 		card.classList.remove(...classes);
 	});
 }
 
 function addCardClasses(...classes) {
+	// cycle through the array and add
 	compare.forEach(function(card) {
 		card.classList.add(...classes);
 	});
@@ -109,6 +111,7 @@ function cardClicked() {
 		gameTimer = setInterval(updateTimer, 1000);
 	}
 
+	// add card to compare array
 	compare.push(this);
 
 	this.removeEventListener('click', cardClicked);
@@ -122,9 +125,9 @@ function cardClicked() {
 function compareCards() {
 	clickActive = false;
 
+	// grab the class strings of the cards and compare
 	const card1 = compare[0].querySelector('.fa').className;
 	const card2 = compare[1].querySelector('.fa').className;
-
 	card1 === card2 ? matchCards() : hideCards();
 
 	incrementMoves();
@@ -155,6 +158,7 @@ function hideCards() {
 }
 
 function resetCompare() {
+	// clear the compare array
 	compare.length = 0;
 	clickActive = true;
 }
@@ -167,6 +171,7 @@ function incrementMoves() {
 }
 
 function adjustStars() {
+	// adjust stars class icon based on moves
 	if (moves == 20) {
 		stars--;
 		starsHolder[2].classList.replace('fa-star', 'fa-star-o');
