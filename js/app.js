@@ -189,13 +189,13 @@ function updateTimer() {
 }
 
 function checkCompleted() {
-	if (matches === (cards.length / 2)) {
+	if (matches === 1) {
 		clearInterval(gameTimer);
 
-		const winMoves = winModal.querySelector('.win-moves');
+		const winTime = winModal.querySelector('.win-time');
 		const winStars = winModal.querySelector('.win-stars');
 
-		winMoves.innerText = moves;
+		winTime.innerText = timer.innerText;
 		winStars.innerText = stars;
 
 		setTimeout(function(){

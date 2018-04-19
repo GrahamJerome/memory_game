@@ -1,0 +1,35 @@
+@media screen and (max-width: 375px) {
+	.deck {
+		width: 100%;
+		min-height: 525px;
+	}
+
+	.deck .card {
+		height: 70px;
+		width: 70px;
+	}
+}
+
+@media screen and (min-width: 768px) {
+	.deck {
+		width: 85%;
+		min-height: 600px;
+	}
+
+	.deck .card {
+		height: 118px;
+		width: 118px;
+	}
+}
+
+@media screen and (min-width: 960px) {
+	.deck {
+		width: 660px;
+		min-height: 680px;
+	}
+
+	.deck .card {
+		height: 125px;
+    	width: 125px;
+	}
+}
