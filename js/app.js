@@ -15,6 +15,10 @@ const cards = Array.from(document.querySelectorAll('.card'));
 const compare = [];
 let clickActive = true;
 
+const flipAnim = 'jello';
+const matchAnim = 'rubberBand';
+const noMatchAnim = 'shake';
+
 let moves = 0;
 const movesHolder = document.querySelector('.moves');
 const starsHolder = document.querySelector('.stars').querySelectorAll('.fa');
@@ -25,36 +29,6 @@ restartButton.addEventListener('click', initGame);
 let gameTime = 0;
 
 initGame();
-
-function initGame() {
-	resetGame();
-	shuffle(cards);
-
-	// remove all cards
-	while (deck.firstChild) {
-		deck.removeChild(deck.firstChild);
-	}
-
-	// replace cards
-	for (let i = 0; i < cards.length; i++) {
-		cards[i].addEventListener('click', cardClicked);
-		cards[i].classList.remove('open', 'show', 'match', 'flip', 'ruberBand');
-		deck.appendChild(cards[i]);
-	}
-
-	// setInterval(updateTimer, 1000);
-}
-
-function resetGame() {
-	moves = 0;
-	movesHolder.innerText = 0;
-
-	starsHolder.forEach(function(element){
-		element.classList.replace('fa-star-o', 'fa-star');
-	});
-
-	resetCompare();
-}
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -71,71 +45,92 @@ function shuffle(array) {
     return array;
 }
 
-function resetDeck() {
+function initGame() {
+	moves = 0;
+	movesHolder.innerText = 0;
 
+	starsHolder.forEach(function(element){
+		element.classList.replace('fa-star-o', 'fa-star');
+	});
+
+	resetCompare();
+
+	shuffle(cards);
+
+	// remove all cards
+	while (deck.firstChild) {
+		deck.removeChild(deck.firstChild);
+	}
+
+	// replace cards
+	for (let i = 0; i < cards.length; i++) {
+		cards[i].addEventListener('click', cardClicked);
+		cards[i].className = 'card animated';
+		deck.appendChild(cards[i]);
+	}
+
+	// setInterval(updateTimer, 1000);
+}
+
+function removeCardClasses(...classes) {
+	compare.forEach(function(card) {
+		card.classList.remove(...classes);
+	});
+}
+
+function addCardClasses(...classes) {
+	compare.forEach(function(card) {
+		card.classList.add(...classes);
+	});
 }
 
 function cardClicked() {
 	if (!clickActive) { return; }
 
-	// remove the clicked event listener, re-adds later if not a match
-	this.removeEventListener('click', cardClicked);
-
-	this.classList.add('open', 'show', 'pulse');
-
-	const card = this.querySelector('.fa');
-	const cardName = card.className;
-
 	compare.push(this);
 
+	this.removeEventListener('click', cardClicked);
+	addCardClasses('open', 'show', flipAnim);
+
 	if (compare.length === 2) {
-		clickActive = false;
 		compareCards();
 	}
 }
 
 function compareCards() {
+	clickActive = false;
+
 	const card1 = compare[0].querySelector('.fa').className;
 	const card2 = compare[1].querySelector('.fa').className;
 
-	if (card1 == card2) {
-		matchCards();
-	} else {
-		compare[0].classList.add('shake');
-		compare[1].classList.add('shake');
-		setTimeout(hideCards, 1750);
-	}
+	card1 === card2 ? matchCards() : hideCards();
 
 	incrementMoves();
 }
 
 function matchCards() {
-	removeOpenShow();
-
-	compare[0].classList.add('match', 'rubberBand');
-	compare[1].classList.add('match', 'rubberBand');
+	addCardClasses('match', matchAnim);
+	removeCardClasses('open', 'show', flipAnim);
 
 	resetCompare();
 }
 
 function hideCards() {
-	removeOpenShow();
+	addCardClasses(noMatchAnim);
 
-	compare[0].addEventListener('click', cardClicked);
-	compare[1].addEventListener('click', cardClicked);
+	setTimeout(function() {
+		removeCardClasses('open', 'show', flipAnim, noMatchAnim);
+		compare.forEach(function(card){
+			card.addEventListener('click', cardClicked);
+		});
 
-	resetCompare();
-}
-
-function removeOpenShow() {
-	compare[0].classList.remove('open', 'show', 'pulse');
-	compare[1].classList.remove('open', 'show', 'pulse');
-
-	clickActive = true;
+		resetCompare();
+	}, 1750);
 }
 
 function resetCompare() {
 	compare.length = 0;
+	clickActive = true;
 }
 
 function incrementMoves() {
