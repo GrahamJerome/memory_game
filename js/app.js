@@ -194,7 +194,7 @@ function updateTimer() {
 }
 
 function checkCompleted() {
-	if (matches === (cards.length /2)) {
+	if (matches === (cards.length / 2)) {
 		clearInterval(gameTimer);
 
 		const winTime = winModal.querySelector('.win-time');
